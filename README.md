@@ -94,7 +94,7 @@ az network private-endpoint create \
 --vnet-name myPEVnet \
 --subnet myPESubnet \
 --private-connection-resource-id \
-"/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS \
+"/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS" \
 --connection-name myPEConnectingPLS \
 --location eastus2
 
