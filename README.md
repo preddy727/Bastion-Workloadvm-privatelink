@@ -45,7 +45,21 @@ az vmss create \
     --subnet mySubnet \
     --custom-data MyCloudInitScript.yml
     
-##
+##Disable Private Link service network policies on subnet
+az network vnet subnet update --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet --disable-private-link-service-network-policies true
+
+##Create a Private Link Service 
+az network private-link-service create \
+--resource-group Bastion \
+--name myPLS \
+--vnet-name myVirtualNetwork \
+--subnet mySubnet \
+--lb-name myScaleSetLB \
+--lb-frontend-ip-configs myFrontEnd \
+--location eastus2 
+
+##Note the resource id which will be needed later when creating an endpoint in the workload VNET 
+
 ```
 
 ### Attach an external load balancer
