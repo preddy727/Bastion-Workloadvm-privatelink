@@ -8,7 +8,7 @@
 5) Create a private endpoint in the workload vnet to connect to the private link service of the bastion vnet.  
 
 ## Pre-requisites 
-The Azure CLI version is 2.6. 
+The Azure CLI version is 2.6. Use the following command to install on Linux
 ```powershell
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash 
 ```
