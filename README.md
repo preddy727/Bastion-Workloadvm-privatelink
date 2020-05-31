@@ -30,7 +30,8 @@ az network vnet create --resource-group Bastion --name myVirtualNetwork --addres
 az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet --address-prefixes 10.0.0.0/24
 
 
-##Create a zone-redundant scale set installed with squid and attached to external load balancer. The sample cloudinit is in this repository. 
+##Create a zone-redundant scale set installed with squid and attached to external load balancer. 
+##The sample cloudinit is in this repository. 
 az vmss create \
     --resource-group Bastion \
     --name myScaleSet \
