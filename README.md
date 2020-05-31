@@ -27,7 +27,8 @@ az group create --name Bastion --location eastus2
 az network vnet create --resource-group Bastion --name myVirtualNetwork --address-prefix 10.0.0.0/16
 
 ##Create a subnet 
-az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet --address-prefixes 10.0.0.0/24
+az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet \
+    --address-prefixes 10.0.0.0/24
 
 
 ##Create a zone-redundant scale set installed with squid and attached to external load balancer. 
