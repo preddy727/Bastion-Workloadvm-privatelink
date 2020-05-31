@@ -19,6 +19,48 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 1. Create all the components described in the overview and architecture diagram.    
 
 ### Create the Bastion VNET
+```powershell 
+## Create a resource group 
+az group create --name Bastion --location eastus2
+
+##Create a virtual network 
+az network vnet create --resource-group Bastion --name myVirtualNetwork --address-prefix 10.0.0.0/16
+
+##Create a subnet 
+az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet --address-prefixes 10.0.0.0/24
+##Create a Internal load balancer
+az network lb create --resource-group Bastion --name myILB --sku standard --vnet-name MyVirtualNetwork --subnet mySubnet --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
+##Create a load balancer health probe 
+az network lb probe create \
+    --resource-group Bastion \
+    --lb-name myILB \
+    --name myHealthProbe \
+    --protocol tcp \
+    --port 80
+##Create a load balancer rule
+az network lb rule create \
+    --resource-group Bastion \
+    --lb-name myILB \
+    --name myHTTPRule \
+    --protocol tcp \
+    --frontend-port 80 \
+    --backend-port 80 \
+    --frontend-ip-name myFrontEnd \
+    --backend-pool-name myBackEndPool \
+    --probe-name myHealthProbe
+##Create NICs
+for i in `seq 1 2`; do
+  az network nic create \
+    --resource-group myResourceGroupILB \
+    --name myNic$i \
+    --vnet-name myVnet \
+    --subnet mySubnet \
+    --lb-name myLoadBalancer \
+    --lb-address-pools myBackEndPool
+done
+
+
+```
 
 ### Attach an external load balancer
 
