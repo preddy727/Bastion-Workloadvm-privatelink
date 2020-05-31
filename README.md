@@ -56,7 +56,7 @@ az network private-link-service create \
 --vnet-name myVirtualNetwork \
 --subnet mySubnet \
 --lb-name myScaleSetLB \
---lb-frontend-ip-configs myFrontEnd \
+--lb-frontend-ip-configs loadBalancerFrontEnd \
 --location eastus2 
 
 ##Note the resource id which will be needed later when creating an endpoint in the workload VNET 
