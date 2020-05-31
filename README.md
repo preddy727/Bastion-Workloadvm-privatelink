@@ -1,11 +1,11 @@
 # Bastion-Workloadvm-privatelink
 ## Overview
 
-Create a central proxy scaleset in the bastion vnet to monitor and control web traffic from the workload vnet. 
-Create a Jump Server to access a scaleset in the worklod vnet. 
-Create a scaleset in the workload vnet. 
-Create a private endpoint in the bastion vnet to connect to the private link service of the workload vnet. 
-Create a private endpoint in the workload vnet to connect to the private link service of the bastion vnet.  
+*Create a central proxy scaleset in the bastion vnet to monitor and control web traffic from the workload vnet. 
+*Create a Jump Server to access a scaleset in the worklod vnet. 
+*Create a scaleset in the workload vnet. 
+*Create a private endpoint in the bastion vnet to connect to the private link service of the workload vnet. 
+*Create a private endpoint in the workload vnet to connect to the private link service of the bastion vnet.  
 
 ## Pre-requisites 
 The Azure CLI version is 2.6. 
