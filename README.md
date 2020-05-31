@@ -48,18 +48,15 @@ az network lb rule create \
     --frontend-ip-name myFrontEnd \
     --backend-pool-name myBackEndPool \
     --probe-name myHealthProbe
-##Create NICs
-for i in `seq 1 2`; do
-  az network nic create \
-    --resource-group myResourceGroupILB \
-    --name myNic$i \
-    --vnet-name myVnet \
-    --subnet mySubnet \
-    --lb-name myLoadBalancer \
-    --lb-address-pools myBackEndPool
-done
-
-
+##Create a zone-redundant scale set 
+az vmss create \
+    --resource-group Bastion \
+    --name myScaleSet \
+    --image UbuntuLTS \
+    --upgrade-policy-mode automatic \
+    --admin-username azureuser \
+    --generate-ssh-keys \
+    --zones 1 2 3
 ```
 
 ### Attach an external load balancer
