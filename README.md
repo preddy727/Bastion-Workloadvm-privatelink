@@ -28,26 +28,7 @@ az network vnet create --resource-group Bastion --name myVirtualNetwork --addres
 
 ##Create a subnet 
 az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet --address-prefixes 10.0.0.0/24
-##Create a Internal load balancer
-az network lb create --resource-group Bastion --name myILB --sku standard --vnet-name MyVirtualNetwork --subnet mySubnet --frontend-ip-name myFrontEnd --backend-pool-name myBackEndPool
-##Create a load balancer health probe 
-az network lb probe create \
-    --resource-group Bastion \
-    --lb-name myILB \
-    --name myHealthProbe \
-    --protocol tcp \
-    --port 80
-##Create a load balancer rule
-az network lb rule create \
-    --resource-group Bastion \
-    --lb-name myILB \
-    --name myHTTPRule \
-    --protocol tcp \
-    --frontend-port 80 \
-    --backend-port 80 \
-    --frontend-ip-name myFrontEnd \
-    --backend-pool-name myBackEndPool \
-    --probe-name myHealthProbe
+
 ##Create a zone-redundant scale set 
 az vmss create \
     --resource-group Bastion \
@@ -57,6 +38,8 @@ az vmss create \
     --admin-username azureuser \
     --generate-ssh-keys \
     --zones 1 2 3
+    --vnet-name myVirtualNetwork
+    --subnet mySubnet
     --custom-data MyCloudInitScript.yml
 ```
 
