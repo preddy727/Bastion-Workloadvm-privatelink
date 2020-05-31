@@ -98,7 +98,7 @@ az network private-endpoint create \
 --connection-name myPEConnectingPLS \
 --location eastus2
 
-az network private-link-service show --resource-group Workload --name myPLS
+az network private-link-service show --resource-group Bastion --name myPLS
 
 ```
 ### Create two security groups. Allow ssh from on premises and incoming traffic from workload vnet 
