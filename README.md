@@ -18,7 +18,7 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 ## Goals of the Lab
 1. Create all the components described in the overview and architecture diagram.    
 
-## Create a proxy scaleset
+## Create the Bastion VNET
 ```powershell
 az login
 az account set --subscription <your subscription name>
@@ -26,16 +26,9 @@ az account set --subscription <your subscription name>
 #create resource group
 az group create --name <your rg name> --location <eastus2>
 
-#get kubernetes version 
-version=$(az aks get-versions -l <eastus2> --query 'orchestrators[-1].orchestratorVersion' -o tsv)
-
 #Create a vnet and subnet 
-az network vnet create \
-    --resource-group myResourceGroup \
-    --name myAKSVnet \
-    --address-prefixes 192.168.0.0/16 \
-    --subnet-name myAKSSubnet \
-    --subnet-prefix 192.168.1.0/24
+az network vnet create -g <your rg name> -n MyVnet --address-prefix 10.0.0.0/16 \
+    --subnet-name MySubnet --subnet-prefix 10.0.0.0/24
     
 #Create a service principal and assign permissions 
 az ad sp create-for-rbac --skip-assignment
