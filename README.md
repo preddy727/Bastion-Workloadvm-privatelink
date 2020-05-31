@@ -13,7 +13,7 @@ The Azure CLI version is 2.6.
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash 
 ```
 ### Architecture Diagram
-* Process flow ![alt text](https://github.com/preddy727/Bastion-Workloadvm-privatelink/blob/master/architecture.PNG)
+* Process flow ![alt text](https://github.com/preddy727/Bastion-Workloadvm-privatelink/blob/master/architecture.png)
 
 ## Goals of the Lab
 1. Create all the components described in the overview and architecture diagram.    
