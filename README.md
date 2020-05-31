@@ -65,6 +65,8 @@ az network private-link-service create \
 
 ### Create the workload components 
 ```powershell
+## Create a resource group 
+az group create --name Workload --location eastus2
 ## Create the virtual network 
 az network vnet create \
 --resource-group Workload \
