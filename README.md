@@ -29,7 +29,8 @@ az network vnet create --resource-group Bastion --name myVirtualNetwork --addres
 ##Create a subnet 
 az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet --address-prefixes 10.0.0.0/24
 
-##Create a zone-redundant scale set 
+
+##Create a zone-redundant scale set with an external load balancer. The sample cloudinit is in this repository. 
 az vmss create \
     --resource-group Bastion \
     --name myScaleSet \
@@ -51,13 +52,6 @@ az vmss create \
 
 ### Install the Bastion Squid proxy VM using the Ubuntu marketplace image
 
-### Intall Squid
-```powershell 
-sudo yum install squid
-sudo chkconfig squid on
-sudo service squid start
-sudo service squid status
-```
 ### Setup private link service in Bastion 
 
 ### Setup private link service in Workload 
