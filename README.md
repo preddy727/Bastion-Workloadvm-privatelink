@@ -57,6 +57,7 @@ az vmss create \
     --admin-username azureuser \
     --generate-ssh-keys \
     --zones 1 2 3
+    --custom-data MyCloudInitScript.yml
 ```
 
 ### Attach an external load balancer
