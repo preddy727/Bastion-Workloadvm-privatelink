@@ -60,7 +60,7 @@ az network private-link-service create \
 --location eastus2 
 
 ##Note the resource id which will be needed later when creating an endpoint in the workload VNET 
-
+"/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS"
 ```
 
 ### Attach an external load balancer
