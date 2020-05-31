@@ -63,8 +63,41 @@ az network private-link-service create \
 "/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS"
 ```
 
-### Attach an external load balancer
+### Create the workload components 
+```powershell
+## Create the virtual network 
+az network vnet create \
+--resource-group Workload \
+--name myPEVnet \
+--address-prefix 10.0.0.0/16
 
+## Create the subnet 
+az network vnet subnet create \
+--resource-group Workload \
+--vnet-name myPEVnet \
+--name myPESubnet \
+--address-prefixes 10.0.0.0/24
+
+## Disable private endpoint network policies on subnet 
+az network vnet subnet update \
+--resource-group Workload \
+--vnet-name myPEVnet \
+--name myPESubnet \
+--disable-private-endpoint-network-policies true
+
+##Create private endpoint and connect to private link service 
+az network private-endpoint create \
+--resource-group Workload \
+--name myPE \
+--vnet-name myPEVnet \
+--subnet myPESubnet \
+--private-connection-resource-id {PLS_resourceURI noted above} \
+--connection-name myPEConnectingPLS \
+--location eastus2
+
+az network private-link-service show --resource-group Workload --name myPLS
+
+```
 ### Create two security groups. Allow ssh from on premises and incoming traffic from workload vnet 
 
 ### Create the Workload VNET
