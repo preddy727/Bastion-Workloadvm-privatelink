@@ -38,9 +38,9 @@ az vmss create \
     --upgrade-policy-mode automatic \
     --admin-username azureuser \
     --generate-ssh-keys \
-    --zones 1 2 3
-    --vnet-name myVirtualNetwork
-    --subnet mySubnet
+    --zones 1 2 3 \
+    --vnet-name myVirtualNetwork \
+    --subnet mySubnet \
     --custom-data MyCloudInitScript.yml
 ```
 
