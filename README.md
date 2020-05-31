@@ -46,7 +46,8 @@ az vmss create \
     --custom-data MyCloudInitScript.yml
     
 ##Disable Private Link service network policies on subnet
-az network vnet subnet update --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet --disable-private-link-service-network-policies true
+az network vnet subnet update --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet \
+    --disable-private-link-service-network-policies true
 
 ##Create a Private Link Service 
 az network private-link-service create \
