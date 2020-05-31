@@ -103,14 +103,6 @@ az network private-link-service show --resource-group Bastion --name myPLS
 ```
 ### Create two security groups. Allow ssh from on premises and incoming traffic from workload vnet 
 
-### Create the Workload VNET
-
-### Install the Bastion Squid proxy VM using the Ubuntu marketplace image
-
-### Setup private link service in Bastion 
-
-### Setup private link service in Workload 
-
 ### Setup SSH access from Bastion Jump server
 
 ### Verify access to external urls
