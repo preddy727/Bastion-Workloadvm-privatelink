@@ -74,7 +74,16 @@ just replace the public IP with your specific IP: ssh 4soadmin@<publicIP>
 
 ##Enable the Azure AD (AAD) Login extension for Linux to this vm 
 
-az vm extension set --publisher Microsoft.Azure.ActiveDirectory.LinuxSSH   name AADLoginForLinux --resource-group Bastion --vm-name 4solinuxvm
+az vm extension set --publisher Microsoft.Azure.ActiveDirectory.LinuxSSH --name AADLoginForLinux --resource-group Bastion --vm-name 4solinuxvm
+
+##Assign the Virtual Machine Administrator login to your current Azure user
+username=$(az account show --query user.name --output tsv)
+vm=$(az vm show --resource-group Bastion --name 4solinuxvm --query id -o tsv)
+
+az role assignment create \
+    --role "Virtual Machine Administrator Login" \
+    --assignee $username \
+    --scope $vm
 
 
 ```
