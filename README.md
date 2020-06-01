@@ -77,7 +77,7 @@ just replace the public IP with your specific IP: ssh 4soadmin@<publicIP>
 az vm extension set --publisher Microsoft.Azure.ActiveDirectory.LinuxSSH --name AADLoginForLinux --resource-group Bastion --vm-name 4solinuxvm
 
 ##Assign the Virtual Machine Administrator login to your current Azure user
-username=$(az account show --query user.name --output tsv)
+
 vm=$(az vm show --resource-group Bastion --name 4solinuxvm --query id -o tsv)
 
 az role assignment create \
@@ -85,6 +85,8 @@ az role assignment create \
     --assignee $username \
     --scope $vm
 
+##Validate connectivity using ssh and AAD user. Authenticate using multi-factor authentication. Enter code in browser. 
+ssh <yourAadUser@domain.com>@<publicIP>
 
 ```
 
@@ -138,6 +140,7 @@ az vmss create \
     --vnet-name myPEVnet \
     --subnet myPESubnet \
     --custom-data myclientcloudinit.yml
+
 
 
 ```
