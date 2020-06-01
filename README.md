@@ -69,6 +69,9 @@ az network private-link-service create \
 
 az vm create --image UbuntuLTS --generate-ssh-keys --admin-username 4soadmin --location eastus2 --name 4solinuxvm --resource-group Bastion --size Standard_D3_v2 --vnet-name myVirtualNetwork --subnet myJumpSubnet --nsg "" --output table
 
+##Validate connectivity to Jump Server
+just replace the public IP with your specific IP: ssh 4soadmin@<publicIP>
+
 
 
 ```
