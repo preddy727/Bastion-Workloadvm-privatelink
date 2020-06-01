@@ -72,6 +72,9 @@ az vm create --image UbuntuLTS --generate-ssh-keys --admin-username 4soadmin --l
 ##Validate connectivity to Jump Server
 just replace the public IP with your specific IP: ssh 4soadmin@<publicIP>
 
+##Enable the Azure AD (AAD) Login extension for Linux to this vm 
+
+az vm extension set --publisher Microsoft.Azure.ActiveDirectory.LinuxSSH   name AADLoginForLinux --resource-group Bastion --vm-name 4solinuxvm
 
 
 ```
