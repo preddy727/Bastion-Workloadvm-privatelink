@@ -26,10 +26,13 @@ az group create --name Bastion --location eastus2
 ##Create a virtual network 
 az network vnet create --resource-group Bastion --name myVirtualNetwork --address-prefix 10.0.0.0/16
 
-##Create a subnet 
+##Create a subnet for the squid proxy 
 az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet \
     --address-prefixes 10.0.0.0/24
 
+##Create a subnet for the jump server
+az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetwork --name myJumpSubnet \
+    --address-prefixes 10.0.1.0/24
 
 ##Create a zone-redundant scale set installed with squid and attached to external load balancer. 
 ##The sample cloudinit is in this repository. 
@@ -61,6 +64,13 @@ az network private-link-service create \
 
 ##Note the resource id which will be needed later when creating an endpoint in the workload VNET 
 "/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS"
+
+##Create a Jump Server
+
+az vm create --image UbuntuLTS --generate-ssh-keys --admin-username 4soadmin --location eastus2 --name 4solinuxvm --resource-group Bastion --size Standard_D3_v2 --vnet-name myVirtualNetwork --subnet myJumpSubnet --nsg "" --output table
+
+
+
 ```
 
 ### Create the workload components 
@@ -100,7 +110,20 @@ az network private-endpoint create \
 
 az network private-link-service show --resource-group Bastion --name myPLS
 
-##Create a scaleset and use the proxy endpoint. Go to the portal and search for myPE. Record the private ip address.  
+##Create a scaleset and use the proxy endpoint. Go to the portal and search for myPE. Record the private ip address. Update the myclientcloudinit.yml with the private ip for the proxy settings. 
+
+az vmss create \
+    --resource-group Bastion \
+    --name myScaleSet \
+    --image UbuntuLTS \
+    --upgrade-policy-mode automatic \
+    --admin-username azureuser \
+    --generate-ssh-keys \
+    --zones 1 2 3 \
+    --vnet-name myPEVnet \
+    --subnet myPESubnet \
+    --custom-data myclientcloudinit.yml
+
 
 ```
 ### Create two security groups. Allow ssh from on premises and incoming traffic from workload vnet 
