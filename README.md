@@ -100,6 +100,8 @@ az network private-endpoint create \
 
 az network private-link-service show --resource-group Bastion --name myPLS
 
+##Create a scaleset and use the proxy endpoint. Go to the portal and search for myPE. Record the private ip address.  
+
 ```
 ### Create two security groups. Allow ssh from on premises and incoming traffic from workload vnet 
 
