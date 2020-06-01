@@ -18,7 +18,7 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 ## Goals of the Lab
 1. Create all the components described in the overview and architecture diagram.    
 
-### Create the Bastion components (VNET, ScaleSet, External Load Balancer, Private Link Service) 
+### Create the Bastion components (VNET, Subnets, Proxy ScaleSet, Jump server, External Load Balancer, Private Link Service) 
 ```powershell 
 ## Create a resource group 
 az group create --name Bastion --location eastus2
