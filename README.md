@@ -94,38 +94,6 @@ ssh <yourAadUser@domain.com>@<publicIP>
 ```powershell
 ## Create a resource group 
 az group create --name Workload --location eastus2
-## Create the virtual network 
-az network vnet create \
---resource-group Workload \
---name myPEVnet \
---address-prefix 10.0.0.0/16
-
-## Create the subnet 
-az network vnet subnet create \
---resource-group Workload \
---vnet-name myPEVnet \
---name myPESubnet \
---address-prefixes 10.0.0.0/24
-
-## Disable private endpoint network policies on subnet 
-az network vnet subnet update \
---resource-group Workload \
---vnet-name myPEVnet \
---name myPESubnet \
---disable-private-endpoint-network-policies true
-
-##Create private endpoint and connect to private link service 
-az network private-endpoint create \
---resource-group Workload \
---name myPE \
---vnet-name myPEVnet \
---subnet myPESubnet \
---private-connection-resource-id \
-"/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS" \
---connection-name myPEConnectingPLS \
---location eastus2
-
-az network private-link-service show --resource-group Bastion --name myPLS
 
 ##Create a scaleset with an internal load balancer and use the proxy endpoint. Go to the portal and search for myPE. Record the private ip address. Update the myclientcloudinit.yml with the private ip for the proxy settings. 
 
@@ -135,6 +103,28 @@ Please provide string value for 'vmssName' (? for help): workload
 Please provide int value for 'instanceCount' (? for help): 2
 Please provide string value for 'adminUsername' (? for help): prreddy
 Please provide securestring value for 'adminPasswordOrKey' (? for help):
+
+
+## Disable private endpoint network policies on subnet 
+az network vnet subnet update \
+--resource-group Workload \
+--vnet-name workloadwvnet \
+--name workloadwsubnet \
+--disable-private-endpoint-network-policies true
+
+##Create private endpoint and connect to private link service 
+az network private-endpoint create \
+--resource-group Workload \
+--name myPE \
+--vnet-name workloadwvnet \
+--subnet workloadwsubnet \
+--private-connection-resource-id \
+"/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS" \
+--connection-name myPEConnectingPLS \
+--location eastus2
+
+az network private-link-service show --resource-group Bastion --name myPLS
+
 
 
 
