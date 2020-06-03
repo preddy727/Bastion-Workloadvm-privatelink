@@ -191,13 +191,24 @@ az network private-link-service create \
 --lb-frontend-ip-configs loadBalancerFrontEnd \
 --location eastus2
 
+az network private-endpoint create \
+--resource-group Bastion \
+--name myWorkloadPE \
+--vnet-name myVirtualNetwork \
+--subnet mySubnet \
+--private-connection-resource-id \
+"/subscriptions/<your sub id>/resourceGroups/Workload/providers/Microsoft.Network/privateLinkServices/myWorkloadPLS" \
+--connection-name myPEConnectingPLS \
+--location eastus2
 
+##SSH to jump server  
+ssh <yourAadUser@domain.com>@<publicIP>
 
+##SSH to scaleset instance 
+ssh -W <loadbalancerip:port> -L username
+export http_proxy=<privatendpointip>:3128
+export https_proxy=<privateendpointip>:3128
+curl -x http://<privateendpointip>:3128 https://dev.azure.com
 
 ```
-### Create two security groups. Allow ssh from on premises and incoming traffic from workload vnet 
-
-### Setup SSH access from Bastion Jump server
-
-### Verify access to external urls
 
