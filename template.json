@@ -67,6 +67,7 @@
     },
     "variables": {
         "namingInfix": "[toLower(substring(concat(parameters('vmssName'), uniqueString(resourceGroup().id)), 0, 9))]",
+        "lbSkuName": "Standard",
         "newStorageAccountSuffix": "[concat(variables('namingInfix'), 'sa')]",
         "longNamingInfix": "[toLower(parameters('vmssName'))]",
         "jumpBoxName": "[concat(variables('namingInfix'), 'jbox')]",
@@ -168,7 +169,10 @@
             "type": "Microsoft.Network/loadBalancers",
             "name": "[variables('loadBalancerName')]",
             "location": "[parameters('location')]",
-            "apiVersion": "2018-06-01",
+            "apiVersion": "2018-12-01",
+            "sku": {
+                 "name": "[variables('lbSkuName')]"
+            },
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
             ],
