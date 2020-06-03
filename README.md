@@ -129,7 +129,12 @@ az network private-link-service show --resource-group Bastion --name myPLS
 
 ##Create a scaleset with an internal load balancer and use the proxy endpoint. Go to the portal and search for myPE. Record the private ip address. Update the myclientcloudinit.yml with the private ip for the proxy settings. 
 
-az group deployment create --resource-group workload --template-uri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-vmss-internal-loadbalancer/azuredeploy.json
+az group deployment create --resource-group workload \
+--template-uri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-vmss-internal-loadbalancer/azuredeploy.json 
+Please provide string value for 'vmssName' (? for help): workload
+Please provide int value for 'instanceCount' (? for help): 2
+Please provide string value for 'adminUsername' (? for help): prreddy
+Please provide securestring value for 'adminPasswordOrKey' (? for help):
 
 
 
