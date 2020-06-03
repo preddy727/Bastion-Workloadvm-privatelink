@@ -119,6 +119,27 @@ http_access allow all
 
 sudo systemctl restart squid
 
+
+Block Websites on Squid Proxy
+1. Create and edit a new text file /etc/squid/blocked.acl by entering:
+
+sudo nano /etc/squid/blocked.acl
+2. In this file, add the websites to be blocked, starting with a dot:
+
+.facebook.com
+
+.twitter.com
+
+Note: The dot specifies to block all subsites of the main site.
+
+3. Open the /etc/squid/squid.conf file again:
+
+sudo nano /etc/squid/squid.conf
+4. Add the following lines just above your ACL list:
+
+acl blocked_websites dstdomain “/etc/squid/blocked.acl”
+http_access deny blocked_websites
+
 ```
 
 ### Create the workload components 
