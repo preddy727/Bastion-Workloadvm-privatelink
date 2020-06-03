@@ -177,6 +177,20 @@ az network private-endpoint create \
 
 az network private-link-service show --resource-group Bastion --name myPLS
 
+##Disable Private Link service network policies on subnet
+az network vnet subnet update --resource-group Workload --vnet-name workloadwvnet --name workloadwsubnet \
+    --disable-private-link-service-network-policies true
+
+##Create a Private Link Service 
+az network private-link-service create \
+--resource-group Workload \
+--name myWorkloadPLS \
+--vnet-name workloadwvnet \
+--subnet workloadwsubnet \
+--lb-name workloadwlb \
+--lb-frontend-ip-configs loadBalancerFrontEnd \
+--location eastus2
+
 
 
 
