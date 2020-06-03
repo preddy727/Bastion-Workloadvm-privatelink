@@ -150,7 +150,7 @@ az group create --name Workload --location eastus2
 ##Create a scaleset with an internal load balancer and use the proxy endpoint. Go to the portal and search for myPE. Record the private ip address. Update the myclientcloudinit.yml with the private ip for the proxy settings. 
 
 az group deployment create --resource-group workload \
---template-uri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-vmss-internal-loadbalancer/azuredeploy.json 
+--template-uri https://github.com/preddy727/Bastion-Workloadvm-privatelink/blob/master/template.json 
 Please provide string value for 'vmssName' (? for help): workload
 Please provide int value for 'instanceCount' (? for help): 2
 Please provide string value for 'adminUsername' (? for help): prreddy
