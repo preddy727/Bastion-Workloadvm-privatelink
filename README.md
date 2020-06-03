@@ -34,6 +34,33 @@ az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetw
 az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetwork --name myJumpSubnet \
     --address-prefixes 10.0.1.0/24
 
+
+
+##Create a Jump Server
+
+az vm create --image UbuntuLTS --generate-ssh-keys --admin-username 4soadmin --location eastus2 --name 4solinuxvm --resource-group Bastion --size Standard_D3_v2 --vnet-name myVirtualNetwork --subnet myJumpSubnet --nsg "" --output table
+
+##Validate connectivity to Jump Server
+just replace the public IP with your specific IP: ssh 4soadmin@<publicIP>
+
+##Enable the Azure AD (AAD) Login extension for Linux to this vm 
+
+az vm extension set --publisher Microsoft.Azure.ActiveDirectory.LinuxSSH --name AADLoginForLinux --resource-group Bastion --vm-name 4solinuxvm
+
+##Assign the Virtual Machine Administrator login to your current Azure user
+
+vm=$(az vm show --resource-group Bastion --name 4solinuxvm --query id -o tsv)
+
+az role assignment create \
+    --role "Virtual Machine Administrator Login" \
+    --assignee $username \
+    --scope $vm
+
+##Validate connectivity using ssh and AAD user. Authenticate using multi-factor authentication. Enter code in browser. 
+ssh <yourAadUser@domain.com>@<publicIP>
+##Install the azure cli on the jump server
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
 ##Create a zone-redundant scale set installed with squid and attached to external load balancer. 
 ##The sample cloudinit is in this repository. 
 az vmss create \
@@ -65,28 +92,32 @@ az network private-link-service create \
 ##Note the resource id which will be needed later when creating an endpoint in the workload VNET 
 "/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS"
 
-##Create a Jump Server
+##Look up the ip of the Scaleset instances in the portal 
+ssh azureuser@instanceip 
 
-az vm create --image UbuntuLTS --generate-ssh-keys --admin-username 4soadmin --location eastus2 --name 4solinuxvm --resource-group Bastion --size Standard_D3_v2 --vnet-name myVirtualNetwork --subnet myJumpSubnet --nsg "" --output table
+Configuring Squid Proxy Server
+The Squid configuration file is found at /etc/squid/squid.conf.
 
-##Validate connectivity to Jump Server
-just replace the public IP with your specific IP: ssh 4soadmin@<publicIP>
+1. Open this file in your text editor with the command:
 
-##Enable the Azure AD (AAD) Login extension for Linux to this vm 
+sudo nano /etc/squid/squid.conf
+2. Navigate to find the http_port option. Typically, this is set to listen on Port 3218. This port usually carries TCP traffic. If your system is configured for traffic on another port, change it here.
 
-az vm extension set --publisher Microsoft.Azure.ActiveDirectory.LinuxSSH --name AADLoginForLinux --resource-group Bastion --vm-name 4solinuxvm
+You may also set the proxy mode to transparent if you’d like to prevent Squid from modifying your requests and responses.
 
-##Assign the Virtual Machine Administrator login to your current Azure user
+Change it as follows:
 
-vm=$(az vm show --resource-group Bastion --name 4solinuxvm --query id -o tsv)
+http_port 1234 transparent
+3. Navigate to the http_access deny all option. This is currently configured to block all HTTP traffic. This means no web traffic is allowed.
 
-az role assignment create \
-    --role "Virtual Machine Administrator Login" \
-    --assignee $username \
-    --scope $vm
+Change this to the following:
 
-##Validate connectivity using ssh and AAD user. Authenticate using multi-factor authentication. Enter code in browser. 
-ssh <yourAadUser@domain.com>@<publicIP>
+http_access allow all
+4. Navigate to the visible_hostname option. Add any name you’d like to this entry. This is how the server will appear to anyone trying to connect. Save the changes and exit.
+
+5. Restart the Squid service by entering:
+
+sudo systemctl restart squid
 
 ```
 
