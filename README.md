@@ -150,7 +150,7 @@ az group create --name Workload --location eastus2
 ##Create a scaleset with an internal load balancer and use the proxy endpoint. Go to the portal and search for myPE. Record the private ip address. Update the myclientcloudinit.yml with the private ip for the proxy settings. 
 
 az group deployment create --resource-group workload \
---template-uri https://github.com/preddy727/Bastion-Workloadvm-privatelink/blob/master/template.json 
+--template-uri https://raw.githubusercontent.com/preddy727/Bastion-Workloadvm-privatelink/master/template.json
 Please provide string value for 'vmssName' (? for help): workload
 Please provide int value for 'instanceCount' (? for help): 2
 Please provide string value for 'adminUsername' (? for help): prreddy
@@ -160,16 +160,16 @@ Please provide securestring value for 'adminPasswordOrKey' (? for help):
 ## Disable private endpoint network policies on subnet 
 az network vnet subnet update \
 --resource-group Workload \
---vnet-name workloadwvnet \
---name workloadwsubnet \
+--vnet-name workload6vnet \
+--name workload6subnet \
 --disable-private-endpoint-network-policies true
 
 ##Create private endpoint and connect to private link service 
 az network private-endpoint create \
 --resource-group Workload \
 --name myPE \
---vnet-name workloadwvnet \
---subnet workloadwsubnet \
+--vnet-name workload6vnet \
+--subnet workload6subnet \
 --private-connection-resource-id \
 "/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS" \
 --connection-name myPEConnectingPLS \
@@ -178,18 +178,21 @@ az network private-endpoint create \
 az network private-link-service show --resource-group Bastion --name myPLS
 
 ##Disable Private Link service network policies on subnet
-az network vnet subnet update --resource-group Workload --vnet-name workloadwvnet --name workloadwsubnet \
+az network vnet subnet update --resource-group Workload --vnet-name workload6vnet --name workload6subnet \
     --disable-private-link-service-network-policies true
 
 ##Create a Private Link Service 
 az network private-link-service create \
 --resource-group Workload \
 --name myWorkloadPLS \
---vnet-name workloadwvnet \
---subnet workloadwsubnet \
---lb-name workloadwlb \
+--vnet-name workload6vnet \
+--subnet workload6subnet \
+--lb-name workload6lb \
 --lb-frontend-ip-configs loadBalancerFrontEnd \
 --location eastus2
+
+az network vnet subnet update --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet \
+--disable-private-endpoint-network-policies true
 
 az network private-endpoint create \
 --resource-group Bastion \
