@@ -152,7 +152,7 @@ az group create --name Workload --location eastus2
 
 ssh-keygen -m PEM -t rsa -b 4096
 
-az deployment group create --resource-group workload --template-file 
+az group deployment create --resource-group workload --template-uri https://raw.githubusercontent.com/preddy727/Bastion-Workloadvm-privatelink/master/template.json
 Please provide string value for 'vmssName' (? for help): workload
 Please provide int value for 'instanceCount' (? for help): 2
 Please provide string value for 'adminUsername' (? for help): prreddy
