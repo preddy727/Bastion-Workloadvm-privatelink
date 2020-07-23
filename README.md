@@ -76,6 +76,9 @@ az vmss create \
 az network vnet subnet update --resource-group Bastion3 --vnet-name myVirtualNetwork --name mySubnet \
     --disable-private-link-service-network-policies true
 
+az network vnet subnet update --resource-group Bastion3 --vnet-name myVirtualNetwork --name myJumpSubnet \
+    --disable-private-endpoint-network-policies true
+
 ##Create a Private Link Service 
 az network private-link-service create \
 --resource-group Bastion3 \
@@ -152,7 +155,7 @@ az group create --name Workload --location eastus2
 
 ssh-keygen -m PEM -t rsa -b 4096
 
-az group deployment create --resource-group workload --template-uri https://raw.githubusercontent.com/preddy727/Bastion-Workloadvm-privatelink/master/template.json
+az group deployment create --resource-group workload --template-uri https://raw.githubusercontent.com/preddy727/Bastion-Workloadvm-privatelink/master/template.json 
 Please provide string value for 'vmssName' (? for help): workload
 Please provide int value for 'instanceCount' (? for help): 2
 Please provide string value for 'adminUsername' (? for help): prreddy
@@ -173,7 +176,7 @@ az network private-endpoint create \
 --vnet-name workloadwvnet \
 --subnet workloadwsubnet \
 --private-connection-resource-id \
-"/subscriptions/<subscriptionid>/resourceGroups/Bastion3/providers/Microsoft.Network/privateLinkServices/myPLS" \
+"/subscriptions/c2483929-bdde-40b3-992e-66dd68f52928/resourceGroups/Bastion3/providers/Microsoft.Network/privateLinkServices/myPLS" \
 --connection-name myPEConnectingPLS \
 --location eastus2
 
@@ -182,6 +185,9 @@ az network private-link-service show --resource-group Bastion --name myPLS
 ##Disable Private Link service network policies on subnet
 az network vnet subnet update --resource-group Workload --vnet-name workloadwvnet --name workloadwsubnet \
     --disable-private-link-service-network-policies true
+
+az network vnet subnet update --resource-group Bastion3 --vnet-name myVirtualNetwork --name mySubnet \
+    --disable-private-endpoint-network-policies true
 
 ##Create a Private Link Service 
 az network private-link-service create \
@@ -194,12 +200,12 @@ az network private-link-service create \
 --location eastus2
 
 az network private-endpoint create \
---resource-group Bastion \
+--resource-group Bastion3 \
 --name myWorkloadPE \
 --vnet-name myVirtualNetwork \
---subnet mySubnet \
+--subnet myJumpSubnet \
 --private-connection-resource-id \
-"/subscriptions/<your sub id>/resourceGroups/Workload/providers/Microsoft.Network/privateLinkServices/myWorkloadPLS" \
+"/subscriptions/<subscriptionid>/resourceGroups/Workload/providers/Microsoft.Network/privateLinkServices/myWorkloadPLS" \
 --connection-name myPEConnectingPLS \
 --location eastus2
 
@@ -207,7 +213,10 @@ az network private-endpoint create \
 ssh <yourAadUser@domain.com>@<publicIP>
 
 ##SSH to scaleset instance 
-ssh -W <loadbalancerip:port> -L username
+ssh azureuser@10.0.1.5 -p 50001
+ssh azureuser@10.0.1.5 -p 50002
 export http_proxy=<privatendpointip>:3128
 export https_proxy=<privateendpointip>:3128
 curl -x http://<privateendpointip>:3128 https://dev.azure.com
+
+```
