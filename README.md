@@ -21,40 +21,37 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 ### Create the Bastion components (VNET, Subnets, Proxy ScaleSet, Jump server, External Load Balancer, Private Link Service) 
 ```powershell 
 ## Create a resource group 
-az group create --name Bastion --location eastus2
+az group create --name Bastion3 --location eastus2
 
 ##Create a virtual network 
-az network vnet create --resource-group Bastion --name myVirtualNetwork --address-prefix 10.0.0.0/16
+az network vnet create --resource-group Bastion3 --name myVirtualNetwork --address-prefix 10.0.0.0/16
 
 ##Create a subnet for the squid proxy 
-az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet \
+az network vnet subnet create --resource-group Bastion3 --vnet-name myVirtualNetwork --name mySubnet \
     --address-prefixes 10.0.0.0/24
 
 ##Create a subnet for the jump server
-az network vnet subnet create --resource-group Bastion --vnet-name myVirtualNetwork --name myJumpSubnet \
+az network vnet subnet create --resource-group Bastion3 --vnet-name myVirtualNetwork --name myJumpSubnet \
     --address-prefixes 10.0.1.0/24
 
 
 
 ##Create a Jump Server
 
-az vm create --image UbuntuLTS --generate-ssh-keys --admin-username 4soadmin --location eastus2 --name 4solinuxvm --resource-group Bastion --size Standard_D3_v2 --vnet-name myVirtualNetwork --subnet myJumpSubnet --nsg "" --output table
+az vm create --image UbuntuLTS --generate-ssh-keys --admin-username 4soadmin --location eastus2 --name 4solinuxvm --resource-group Bastion3 --size Standard_D3_v2 --vnet-name myVirtualNetwork --subnet myJumpSubnet --nsg "" --output table
 
 ##Validate connectivity to Jump Server
 just replace the public IP with your specific IP: ssh 4soadmin@<publicIP>
 
+40.65.192.121
+
 ##Enable the Azure AD (AAD) Login extension for Linux to this vm 
 
-az vm extension set --publisher Microsoft.Azure.ActiveDirectory.LinuxSSH --name AADLoginForLinux --resource-group Bastion --vm-name 4solinuxvm
+az vm extension set --publisher Microsoft.Azure.ActiveDirectory.LinuxSSH --name AADLoginForLinux --resource-group Bastion3 --vm-name 4solinuxvm
 
 ##Assign the Virtual Machine Administrator login to your current Azure user
 
-vm=$(az vm show --resource-group Bastion --name 4solinuxvm --query id -o tsv)
-
-az role assignment create \
-    --role "Virtual Machine Administrator Login" \
-    --assignee $username \
-    --scope $vm
+vm=$(az vm show --resource-group Bastion3 --name 4solinuxvm --query id -o tsv)
 
 ##Validate connectivity using ssh and AAD user. Authenticate using multi-factor authentication. Enter code in browser. 
 ssh <yourAadUser@domain.com>@<publicIP>
@@ -64,7 +61,7 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 ##Create a zone-redundant scale set installed with squid and attached to external load balancer. 
 ##The sample cloudinit is in this repository. 
 az vmss create \
-    --resource-group Bastion \
+    --resource-group Bastion3 \
     --name myScaleSet \
     --image UbuntuLTS \
     --upgrade-policy-mode automatic \
@@ -76,12 +73,12 @@ az vmss create \
     --custom-data mycloudinitscript.tpl
     
 ##Disable Private Link service network policies on subnet
-az network vnet subnet update --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet \
+az network vnet subnet update --resource-group Bastion3 --vnet-name myVirtualNetwork --name mySubnet \
     --disable-private-link-service-network-policies true
 
 ##Create a Private Link Service 
 az network private-link-service create \
---resource-group Bastion \
+--resource-group Bastion3 \
 --name myPLS \
 --vnet-name myVirtualNetwork \
 --subnet mySubnet \
@@ -92,8 +89,12 @@ az network private-link-service create \
 ##Note the resource id which will be needed later when creating an endpoint in the workload VNET 
 "/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS"
 
+/subscriptions/c2483929-bdde-40b3-992e-66dd68f52928/resourceGroups/Bastion2/providers/Microsoft.Network/privateLinkServices/myPLS
+scp ~/.ssh/id_rsa.pub prreddy@microsoft.com@52.247.59.22:/home/prreddy/.ssh/id_rsa.pub
 ##Look up the ip of the Scaleset instances in the portal 
 ssh azureuser@instanceip 
+
+sudo apt install squid
 
 Configuring Squid Proxy Server
 The Squid configuration file is found at /etc/squid/squid.conf.
@@ -107,7 +108,7 @@ You may also set the proxy mode to transparent if you’d like to prevent Squid 
 
 Change it as follows:
 
-http_port 1234 transparent
+http_port 3218 transparent
 3. Navigate to the http_access deny all option. This is currently configured to block all HTTP traffic. This means no web traffic is allowed.
 
 Change this to the following:
@@ -149,50 +150,48 @@ az group create --name Workload --location eastus2
 
 ##Create a scaleset with an internal load balancer and use the proxy endpoint. Go to the portal and search for myPE. Record the private ip address. Update the myclientcloudinit.yml with the private ip for the proxy settings. 
 
-az group deployment create --resource-group workload \
---template-uri https://raw.githubusercontent.com/preddy727/Bastion-Workloadvm-privatelink/master/template.json
+ssh-keygen -m PEM -t rsa -b 4096
+
+az deployment group create --resource-group workload --template-file 
 Please provide string value for 'vmssName' (? for help): workload
 Please provide int value for 'instanceCount' (? for help): 2
 Please provide string value for 'adminUsername' (? for help): prreddy
-Please provide securestring value for 'adminPasswordOrKey' (? for help):
+Please provide securestring value for 'adminPasswordOrKey' (? for help): paste public key 
 
 
 ## Disable private endpoint network policies on subnet 
 az network vnet subnet update \
 --resource-group Workload \
---vnet-name workload6vnet \
---name workload6subnet \
+--vnet-name workloadwvnet \
+--name workloadwsubnet \
 --disable-private-endpoint-network-policies true
 
 ##Create private endpoint and connect to private link service 
 az network private-endpoint create \
 --resource-group Workload \
 --name myPE \
---vnet-name workload6vnet \
---subnet workload6subnet \
+--vnet-name workloadwvnet \
+--subnet workloadwsubnet \
 --private-connection-resource-id \
-"/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS" \
+"/subscriptions/<subscriptionid>/resourceGroups/Bastion3/providers/Microsoft.Network/privateLinkServices/myPLS" \
 --connection-name myPEConnectingPLS \
 --location eastus2
 
 az network private-link-service show --resource-group Bastion --name myPLS
 
 ##Disable Private Link service network policies on subnet
-az network vnet subnet update --resource-group Workload --vnet-name workload6vnet --name workload6subnet \
+az network vnet subnet update --resource-group Workload --vnet-name workloadwvnet --name workloadwsubnet \
     --disable-private-link-service-network-policies true
 
 ##Create a Private Link Service 
 az network private-link-service create \
 --resource-group Workload \
 --name myWorkloadPLS \
---vnet-name workload6vnet \
---subnet workload6subnet \
---lb-name workload6lb \
+--vnet-name workloadwvnet \
+--subnet workloadwsubnet \
+--lb-name workloadwlb \
 --lb-frontend-ip-configs loadBalancerFrontEnd \
 --location eastus2
-
-az network vnet subnet update --resource-group Bastion --vnet-name myVirtualNetwork --name mySubnet \
---disable-private-endpoint-network-policies true
 
 az network private-endpoint create \
 --resource-group Bastion \
@@ -212,6 +211,3 @@ ssh -W <loadbalancerip:port> -L username
 export http_proxy=<privatendpointip>:3128
 export https_proxy=<privateendpointip>:3128
 curl -x http://<privateendpointip>:3128 https://dev.azure.com
-
-```
-
