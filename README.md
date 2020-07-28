@@ -92,8 +92,8 @@ az network private-link-service create \
 ##Note the resource id which will be needed later when creating an endpoint in the workload VNET 
 "/subscriptions/<your sub id>/resourceGroups/Bastion/providers/Microsoft.Network/privateLinkServices/myPLS"
 
-/subscriptions/c2483929-bdde-40b3-992e-66dd68f52928/resourceGroups/Bastion2/providers/Microsoft.Network/privateLinkServices/myPLS
-scp ~/.ssh/id_rsa.pub prreddy@microsoft.com@52.247.59.22:/home/prreddy/.ssh/id_rsa.pub
+/subscriptions/<your sub id>/resourceGroups/Bastion2/providers/Microsoft.Network/privateLinkServices/myPLS
+scp ~/.ssh/id_rsa.pub <youruserid>@microsoft.com@<publicip>:/home/<userid>/.ssh/id_rsa.pub
 ##Look up the ip of the Scaleset instances in the portal 
 ssh azureuser@instanceip 
 
@@ -176,7 +176,7 @@ az network private-endpoint create \
 --vnet-name workloadwvnet \
 --subnet workloadwsubnet \
 --private-connection-resource-id \
-"/subscriptions/c2483929-bdde-40b3-992e-66dd68f52928/resourceGroups/Bastion3/providers/Microsoft.Network/privateLinkServices/myPLS" \
+"/subscriptions/<subid>/resourceGroups/Bastion3/providers/Microsoft.Network/privateLinkServices/myPLS" \
 --connection-name myPEConnectingPLS \
 --location eastus2
 
