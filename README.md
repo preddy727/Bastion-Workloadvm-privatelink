@@ -51,7 +51,13 @@ az vm extension set --publisher Microsoft.Azure.ActiveDirectory.LinuxSSH --name 
 
 ##Assign the Virtual Machine Administrator login to your current Azure user
 
+username=$(az account show --query user.name --output tsv)
 vm=$(az vm show --resource-group Bastion3 --name 4solinuxvm --query id -o tsv)
+az role assignment create \
+    --role "Virtual Machine Administrator Login" \
+    --assignee $username \
+    --scope $vm
+
 
 ##Validate connectivity using ssh and AAD user. Authenticate using multi-factor authentication. Enter code in browser. 
 ssh <yourAadUser@domain.com>@<publicIP>
