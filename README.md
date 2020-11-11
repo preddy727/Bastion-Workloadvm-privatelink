@@ -142,13 +142,35 @@ sudo nano /etc/squid/blocked.acl
 
 Note: The dot specifies to block all subsites of the main site.
 
+Allow Websites on Squid Proxy
+1. Create and edit a new text file /etc/squid/allowed.acl by entering:
+
+sudo nano /etc/squid/allowed.acl
+2. In this file, add the azure devops websites to be allowed, starting with a dot:
+dev.azure.com
+.dev.azure.com
+login.microsoftonline.com
+management.core.windows.net
+vstsagentpackage.azureedge.net
+.vsblob.vsassets.io
+.visualstudio.com
+
+Note: The dot specifies to block all subsites of the main site.
+
 3. Open the /etc/squid/squid.conf file again:
 
 sudo nano /etc/squid/squid.conf
 4. Add the following lines just above your ACL list:
 
+# Example rule allowing access from your local networks.
+# Adapt to list your (internal) IP networks from where browsing
+# should be allowed
+acl localnet src 10.0.0.0/8     # RFC1918 possible internal network
+
 acl blocked_websites dstdomain “/etc/squid/blocked.acl”
 http_access deny blocked_websites
+acl allowed_websites dstdomain “/etc/squid/allowed.acl”
+http_access allow allowed_websites
 
 ```
 
